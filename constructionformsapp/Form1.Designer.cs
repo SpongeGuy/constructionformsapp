@@ -35,7 +35,6 @@ namespace constructionformsapp
             this.textDescription = new System.Windows.Forms.TextBox();
             this.textQuantity = new System.Windows.Forms.TextBox();
             this.textUnitCost = new System.Windows.Forms.TextBox();
-            this.textCost = new System.Windows.Forms.TextBox();
             this.textNotes = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,7 +42,6 @@ namespace constructionformsapp
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.buttonSubmit = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -102,18 +100,11 @@ namespace constructionformsapp
             this.textUnitCost.Size = new System.Drawing.Size(72, 23);
             this.textUnitCost.TabIndex = 6;
             // 
-            // textCost
-            // 
-            this.textCost.Location = new System.Drawing.Point(911, 26);
-            this.textCost.Name = "textCost";
-            this.textCost.Size = new System.Drawing.Size(100, 23);
-            this.textCost.TabIndex = 7;
-            // 
             // textNotes
             // 
-            this.textNotes.Location = new System.Drawing.Point(1017, 26);
+            this.textNotes.Location = new System.Drawing.Point(911, 26);
             this.textNotes.Name = "textNotes";
-            this.textNotes.Size = new System.Drawing.Size(137, 23);
+            this.textNotes.Size = new System.Drawing.Size(243, 23);
             this.textNotes.TabIndex = 8;
             // 
             // label1
@@ -164,25 +155,16 @@ namespace constructionformsapp
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(833, 9);
+            this.label6.Location = new System.Drawing.Point(833, 8);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(56, 15);
             this.label6.TabIndex = 14;
             this.label6.Text = "Unit Cost";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(911, 9);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(31, 15);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "Cost";
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(1017, 9);
+            this.label8.Location = new System.Drawing.Point(911, 8);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(38, 15);
             this.label8.TabIndex = 16;
@@ -200,12 +182,18 @@ namespace constructionformsapp
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeColumns = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(12, 55);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 25;
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowTemplate.Height = 19;
             this.dataGridView1.Size = new System.Drawing.Size(1228, 482);
             this.dataGridView1.TabIndex = 18;
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             // 
             // Form1
             // 
@@ -215,7 +203,6 @@ namespace constructionformsapp
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.buttonSubmit);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -223,7 +210,6 @@ namespace constructionformsapp
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textNotes);
-            this.Controls.Add(this.textCost);
             this.Controls.Add(this.textUnitCost);
             this.Controls.Add(this.textQuantity);
             this.Controls.Add(this.textDescription);
@@ -246,7 +232,6 @@ namespace constructionformsapp
         private System.Windows.Forms.TextBox textDescription;
         private System.Windows.Forms.TextBox textQuantity;
         private System.Windows.Forms.TextBox textUnitCost;
-        private System.Windows.Forms.TextBox textCost;
         private System.Windows.Forms.TextBox textNotes;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -254,7 +239,6 @@ namespace constructionformsapp
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button buttonSubmit;
         private System.Windows.Forms.DataGridView dataGridView1;
