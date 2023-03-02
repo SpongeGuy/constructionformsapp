@@ -8,24 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/* todo
+ * finish editing functionality
+ * calculate grand total at bottom or smth
+ * automatically sort by category name on every entry into datagridview
+ * add deletion functionality (add connection between the row in datagridview and its respective Order object)
+ */
+
 namespace constructionformsapp
 {
-    public class Order
-    {
-        public string category;
-        public string itemName;
-        public string material;
-        public string description;
-        public int quantity;
-        public int unitCost;
-        public int cost;
-        public string notes;
-    }
-
     public partial class Form1 : Form
     {
         DataTable table;
-    public Form1()
+        List<Order> orders = new List<Order>();
+        public Form1()
         {
             InitializeComponent();
 
@@ -35,19 +31,23 @@ namespace constructionformsapp
         private void Form1_Load(object sender, EventArgs e)
         {
             table = new DataTable();
+            table.Columns.Add("ID", typeof(int));
             table.Columns.Add("Category", typeof(String));
             table.Columns.Add("Item", typeof(String));
             table.Columns.Add("Material", typeof(String));
             table.Columns.Add("Description", typeof(String));
             table.Columns.Add("Quantity", typeof(int));
-            table.Columns.Add("UnitCost", typeof(int));
-            table.Columns.Add("Cost", typeof(int));
+            table.Columns.Add("UnitCost", typeof(float));
+            table.Columns.Add("Cost", typeof(float));
             table.Columns.Add("Notes", typeof(String));
 
             dataGridView1.DataSource = table;
 
-            int columnWidth = dataGridView1.Width / 8;
+            
 
+            dataGridView1.Columns["ID"].Visible = false;
+
+            int columnWidth = dataGridView1.Width / 8;
             dataGridView1.Columns["Category"].Width = columnWidth;
             dataGridView1.Columns["Item"].Width = columnWidth;
             dataGridView1.Columns["Material"].Width = columnWidth;
@@ -55,11 +55,12 @@ namespace constructionformsapp
             dataGridView1.Columns["Quantity"].Width = columnWidth / 2;
             dataGridView1.Columns["UnitCost"].Width = columnWidth / 2;
             dataGridView1.Columns["Cost"].Width = columnWidth / 2;
-            dataGridView1.Columns["Notes"].Width = columnWidth;
+            dataGridView1.Columns["Notes"].Width = columnWidth + columnWidth / 2;
+
+            dataGridView1.Columns["UnitCost"].DefaultCellStyle.Format = "C";
+            dataGridView1.Columns["Cost"].DefaultCellStyle.Format = "C";
 
             dataGridView1.Refresh();
-
-            System.Diagnostics.Debug.WriteLine("Loaded successfully!");
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -75,42 +76,119 @@ namespace constructionformsapp
             textDescription.Clear();
             textQuantity.Clear();
             textUnitCost.Clear();
-            textCost.Clear();
             textNotes.Clear();
         }
 
         private void buttonSubmit_Click(object sender, EventArgs e)
         {
-            int quantity;
-            double unitCost, cost;
-            // checks if the proper text fields have only integers in them
-            if (int.TryParse(textQuantity.Text, out quantity) && double.TryParse(textUnitCost.Text, out unitCost) && double.TryParse(textCost.Text, out cost))
+            bool success = false;
+            int quantity = 0;
+            float unitCost = 0;
+            try
             {
-                table.Rows.Add(listCategory.Text,
-                                textItem.Text,
-                                textMaterial.Text,
-                                textDescription.Text,
-                                quantity,
-                                unitCost,
-                                cost,
-                                textNotes.Text);
-                clearTextFields();
+                quantity = int.Parse(textQuantity.Text);
+                unitCost = float.Parse(textUnitCost.Text);
+                if (listCategory.Text.Length == 0 || textItem.Text.Length == 0 || textDescription.Text.Length == 0) throw new FormatException("No text in field.");
+                success = true;
+                
             }
-            else
+            catch (FormatException exception)
             {
-                // this is called when the user presses submit and there are non-numeric values in quantity, unitCost, cost fields
-                // have a label pop up on the design that tells the user they messed up or smth
+                DebugHandler.Write("Invalid text in numeric-only field: " + exception.Message);
             }
-
-            System.Diagnostics.Debug.WriteLine("Button clicked!");
+            finally
+            {
+                if (success)
+                {
+                    Order order = new(listCategory.Text, textItem.Text, textMaterial.Text, textDescription.Text, quantity, unitCost, textNotes.Text);
+                    addToForm(order);
+                    clearTextFields();
+                }
+            }
         }
 
-        private void saveBttn_Click_1(object sender, EventArgs e)
+        public void addToForm(Order order)
         {
-            
+            table.Rows.Add(
+                order.id,
+                order.category,
+                order.itemName,
+                order.material,
+                order.description,
+                order.quantity,
+                order.unitCost,
+                order.cost,
+                order.notes);
+            DebugHandler.Write("Order added successfully!");
+            orders.Add(order);
             
         }
 
+        public void removeFromForm(Order order)
+        {
+
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridViewCell cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+
+            int rowID = int.Parse(row.Cells[0].Value.ToString()); // idk how to do this any other way
+
+            for (int index = 0; index < orders.Count; index++)
+            {
+                if (orders[index].id == rowID)
+                {
+                    // i dont know how to do this and im tired and i had to redo all of this bc i accidentally deleted everything
+                }
+            }
+            
+        }
     }
 
+
+
+    public class Order
+    {
+        public static int key = 0;
+
+        public int id;
+        public string category;
+        public string itemName;
+        public string material;
+        public string description;
+        public int quantity;
+        public float unitCost;
+        public float cost;
+        public string notes;
+
+        public Order(string category, string itemName, string material, string description, int quantity, float unitCost, string notes)
+        {
+            this.id = key;
+            this.category = category;
+            this.itemName = itemName;
+            this.material = material;
+            this.description = description;
+            this.quantity = quantity;
+            this.unitCost = unitCost;
+            this.notes = notes;
+            recalculateCost();
+
+            key++;
+        }
+
+        public void recalculateCost()
+        {
+            this.cost = quantity * unitCost;
+        }
+    }
+
+    public class DebugHandler
+    {
+        public static void Write(string message)
+        {
+            System.Diagnostics.Debug.WriteLine(message);
+        }
+    }
 }
