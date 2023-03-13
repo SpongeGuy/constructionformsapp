@@ -17,11 +17,11 @@ using System.Windows.Forms;
 
 namespace constructionformsapp
 {
-    public partial class Form1 : Form
+    public partial class ConstructionFormApp : Form
     {
         DataTable table;
         List<Order> orders = new List<Order>();
-        public Form1()
+        public ConstructionFormApp()
         {
             InitializeComponent();
 
@@ -59,13 +59,9 @@ namespace constructionformsapp
 
             dataGridView1.Columns["UnitCost"].DefaultCellStyle.Format = "C";
             dataGridView1.Columns["Cost"].DefaultCellStyle.Format = "C";
+            dataGridView1.Columns["Category"].ReadOnly = true;
 
             dataGridView1.Refresh();
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void clearTextFields()
@@ -107,6 +103,19 @@ namespace constructionformsapp
             }
         }
 
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            float totalCost = 0;
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                float cost = float.Parse(row.Cells["Cost"].Value.ToString());
+                totalCost += cost;
+            }
+
+            MessageBox.Show("Total cost: " + totalCost.ToString("C"));
+        }
+
         public void addToForm(Order order)
         {
             table.Rows.Add(
@@ -117,16 +126,25 @@ namespace constructionformsapp
                 order.description,
                 order.quantity,
                 order.unitCost,
-                order.cost,
+                order.Cost,
                 order.notes);
-            DebugHandler.Write("Order added successfully!");
-            orders.Add(order);
             
+            orders.Add(order);
+            DebugHandler.DisplayOrders(orders);
+
         }
 
-        public void removeFromForm(Order order)
+        private void calculateTotal_Click(object sender, EventArgs e)
         {
+            float totalCost = 0;
 
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                float cost = float.Parse(row.Cells["Cost"].Value.ToString());
+                totalCost += cost;
+            }
+
+            MessageBox.Show("Total cost: " + totalCost.ToString("C"));
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -134,17 +152,100 @@ namespace constructionformsapp
             DataGridViewCell cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
             DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
 
-            int rowID = int.Parse(row.Cells[0].Value.ToString()); // idk how to do this any other way
+            int rowID = int.Parse(row.Cells[0].Value.ToString());
 
-            for (int index = 0; index < orders.Count; index++)
+            foreach (Order order in orders)
             {
-                if (orders[index].id == rowID)
+                if (order.id == rowID)
                 {
-                    // i dont know how to do this and im tired and i had to redo all of this bc i accidentally deleted everything
+                    DebugHandler.DisplayOrders(orders);
+                    switch (cell.OwningColumn.Name)
+                    {
+                        case "Item":
+                            order.itemName = cell.Value.ToString();
+                            break;
+                        case "Material":
+                            order.material = cell.Value.ToString();
+                            break;
+                        case "Description":
+                            order.description = cell.Value.ToString();
+                            break;
+                        case "Quantity":
+                            order.quantity = int.Parse(cell.Value.ToString());
+                            break;
+                        case "UnitCost":
+                            order.unitCost = float.Parse(cell.Value.ToString());
+                            break;
+                        case "Notes":
+                            order.notes = cell.Value.ToString();
+                            break;
+                    }
+                    DebugHandler.DisplayOrders(orders);
                 }
             }
             
         }
+
+        private void delete_row(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.KeyCode != Keys.Delete) throw new Exception("Not del key");
+                List<DataGridViewRow> rows = new List<DataGridViewRow>();
+                foreach(DataGridViewCell cell in dataGridView1.SelectedCells)
+                {
+                    int rowIndex = dataGridView1.CurrentCell.RowIndex;
+                    DataGridViewRow row = dataGridView1.Rows[rowIndex];
+                    rows.Add(row);
+                }
+
+                // get list of selected order ids
+                List<int> selectedIDs = new List<int>();
+                foreach (DataGridViewRow row in rows)
+                {
+                    if (row != null)
+                    {
+                        int orderID = (int)row.Cells["ID"].Value;
+                        selectedIDs.Add(orderID);
+                    }
+                    
+                }
+
+                // remove selected orders from data source
+                foreach (int id in selectedIDs)
+                {
+                    Order orderToRemove = orders.FirstOrDefault(o => o.id == id);
+                    if (orderToRemove != null)
+                    {
+                        orders.Remove(orderToRemove);
+                    }
+                }
+
+                // remove selected rows from datagridview
+                foreach (DataGridViewRow row in rows)
+                {
+                    dataGridView1.Rows.Remove(row);
+                }
+
+                dataGridView1.Refresh();
+                e.Handled = true;
+            }
+            catch (Exception exception)
+            {
+                DebugHandler.Write(exception.Message);
+            }
+            finally
+            {
+                DebugHandler.DisplayOrders(orders);
+            }
+        }
+
+        private void query_quantity(object sender, EventArgs e)
+        {
+            var subForm = new SubTotalForm(this.orders);
+            subForm.Show();
+        }
+
     }
 
 
@@ -160,7 +261,15 @@ namespace constructionformsapp
         public string description;
         public int quantity;
         public float unitCost;
-        public float cost;
+        private float cost;
+        public float Cost
+        {
+            get
+            {
+                recalculateCost();
+                return cost;
+            }
+        }
         public string notes;
 
         public Order(string category, string itemName, string material, string description, int quantity, float unitCost, string notes)
@@ -182,13 +291,32 @@ namespace constructionformsapp
         {
             this.cost = quantity * unitCost;
         }
+
+        
     }
 
     public class DebugHandler
     {
-        public static void Write(string message)
+        public static void Write(params string[] messages)
         {
-            System.Diagnostics.Debug.WriteLine(message);
+            foreach (string message in messages)
+            {
+                System.Diagnostics.Debug.WriteLine(message);
+            }
         }
+
+        public static void DisplayOrders(List<Order> orders)
+        {
+            Write("--------");
+            foreach (Order order in orders)
+            {
+                Write("", order.category, order.itemName, order.material, order.description, order.quantity.ToString(), order.unitCost.ToString(), order.Cost.ToString(), order.notes);
+            }
+            Write("--------");
+        }
+
+        
     }
+
+    
 }
