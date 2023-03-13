@@ -1,7 +1,7 @@
 ﻿
 namespace constructionformsapp
 {
-    partial class Form1
+    partial class ConstructionFormApp
     {
         /// <summary>
         ///  Required designer variable.
@@ -45,11 +45,16 @@ namespace constructionformsapp
             this.label8 = new System.Windows.Forms.Label();
             this.buttonSubmit = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.buttonCalculate = new System.Windows.Forms.Button();
+            this.buttonViewQuantity = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // listCategory
             // 
+            this.listCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.listCategory.FormattingEnabled = true;
             this.listCategory.Items.AddRange(new object[] {
             "Foundation",
@@ -63,7 +68,6 @@ namespace constructionformsapp
             this.listCategory.Name = "listCategory";
             this.listCategory.Size = new System.Drawing.Size(118, 23);
             this.listCategory.TabIndex = 0;
-            this.listCategory.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // textItem
             // 
@@ -183,7 +187,6 @@ namespace constructionformsapp
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AllowUserToResizeColumns = false;
             this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -194,12 +197,56 @@ namespace constructionformsapp
             this.dataGridView1.Size = new System.Drawing.Size(1228, 482);
             this.dataGridView1.TabIndex = 18;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.delete_row);
             // 
-            // Form1
+            // buttonCalculate
+            // 
+            this.buttonCalculate.Location = new System.Drawing.Point(1160, 560);
+            this.buttonCalculate.Name = "buttonCalculate";
+            this.buttonCalculate.Size = new System.Drawing.Size(80, 65);
+            this.buttonCalculate.TabIndex = 19;
+            this.buttonCalculate.Text = "Calculate Total";
+            this.buttonCalculate.UseVisualStyleBackColor = true;
+            this.buttonCalculate.Click += new System.EventHandler(this.btnCalculate_Click);
+            // 
+            // buttonViewQuantity
+            // 
+            this.buttonViewQuantity.Location = new System.Drawing.Point(1074, 560);
+            this.buttonViewQuantity.Name = "buttonViewQuantity";
+            this.buttonViewQuantity.Size = new System.Drawing.Size(80, 65);
+            this.buttonViewQuantity.TabIndex = 20;
+            this.buttonViewQuantity.Text = "View Total Quantity Ordered";
+            this.buttonViewQuantity.UseVisualStyleBackColor = true;
+            this.buttonViewQuantity.Click += new System.EventHandler(this.query_quantity);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point);
+            this.label7.Location = new System.Drawing.Point(514, 610);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(234, 15);
+            this.label7.TabIndex = 21;
+            this.label7.Text = "Tip: Press \'DEL\' on any cell to delete its row!";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 610);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(243, 15);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Evan Cropper, Jackson Goodall, Erin Denning";
+            // 
+            // ConstructionFormApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1258, 637);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.buttonViewQuantity);
+            this.Controls.Add(this.buttonCalculate);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.buttonSubmit);
             this.Controls.Add(this.label8);
@@ -216,7 +263,7 @@ namespace constructionformsapp
             this.Controls.Add(this.textMaterial);
             this.Controls.Add(this.textItem);
             this.Controls.Add(this.listCategory);
-            this.Name = "Form1";
+            this.Name = "ConstructionFormApp";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
@@ -242,6 +289,10 @@ namespace constructionformsapp
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button buttonSubmit;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button buttonCalculate;
+        private System.Windows.Forms.Button buttonViewQuantity;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label9;
     }
 }
 
